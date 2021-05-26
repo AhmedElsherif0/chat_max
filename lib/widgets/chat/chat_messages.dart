@@ -19,6 +19,7 @@ class ChatMessages extends StatelessWidget {
                 if (streamSnapShots.connectionState == ConnectionState.waiting) {
                   return Center(child: CircularProgressIndicator());
                 }
+                /* A Problem with streamSnapShot.data does'nt have (docs) propirtie After NullSafety addition  */
                 final data = streamSnapShots.data.docs;
                 return ListView.builder(
                   reverse: true,
@@ -26,10 +27,10 @@ class ChatMessages extends StatelessWidget {
                   itemBuilder: (ctx, index) => Container(
                     padding: EdgeInsets.all(8),
                     child: MessageBubble(
-                      data.docs[index]['text'],
-                      data.docs[index]['username'],
-                      data.docs[index]['userImage'],
-                      data.docs[index]['userId'] == _currentUser().uid,
+                      data[index]['text'],
+                      data[index]['username'],
+                      data[index]['userImage'],
+                      data[index]['userId'] == _currentUser().uid,
                     ),
                   ),
                 );
