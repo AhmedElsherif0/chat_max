@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "201780510464",
+    "project_id": "chat-max-676e2",
+    "storage_bucket": "chat-max-676e2.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:201780510464:android:e2c2fb5ffdc2b03e3cfde5",
+        "android_client_info": {
+          "package_name": "com.example.chat_max"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "201780510464-bdhe82fivatp2o7qtiin8e2jhb74kev5.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCGlkT-9sdzcx9G-Zs_8oLeGKLANmMoBFU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "201780510464-bdhe82fivatp2o7qtiin8e2jhb74kev5.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
