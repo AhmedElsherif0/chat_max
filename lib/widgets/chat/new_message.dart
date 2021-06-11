@@ -1,4 +1,4 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:chat_max/data/remote/firebase.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
@@ -20,13 +20,13 @@ class _NewMessageState extends State<NewMessage> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      margin: EdgeInsets.only(top: 4.0),
-      padding: EdgeInsets.all(12),
+      margin: const EdgeInsets.only(top: 4.0),
+      padding: const EdgeInsets.all(12),
       child: Row(
         children: [
           Expanded(
               child: TextField(
-            decoration: InputDecoration(labelText: 'Send Message.....'),
+            decoration: const InputDecoration(labelText: 'Send Message.....'),
             onChanged: (value) {
               setState(() {
                 _enteredMessage = value;
@@ -35,7 +35,7 @@ class _NewMessageState extends State<NewMessage> {
             controller: _controller,
           )),
           IconButton(
-              icon: Icon(Icons.send),
+              icon: const Icon(Icons.send),
               color: Theme.of(context).primaryColor,
               onPressed: _enteredMessage.trim().isEmpty ? null : _sendMessage),
         ],
@@ -43,20 +43,13 @@ class _NewMessageState extends State<NewMessage> {
     );
   }
 
-  void _sendMessage() async {
+  Future<void> _sendMessage() async {
     FocusScope.of(context).unfocus();
-    final user = FirebaseAuth.instance.currentUser;
-    final userName = await FirebaseFirestore.instance
-        .collection('users')
-        .doc(user!.uid)
-        .get();
-    FirebaseFirestore.instance.collection('chat').add({
-      'text': _enteredMessage,
-      'createdAt': Timestamp.now(),
-      'userId': user.uid,
-      'username': userName['name'],
-      'userImage': userName['userImage']
-    });
+    FireBaseHelper fireBase = FireBaseHelper();
+    User? user = FirebaseAuth.instance.currentUser;
+    Map? userName = await fireBase.getUserName(user!.uid);
+    fireBase.addUserData(
+        _enteredMessage, user.uid, userName?['name'], userName?['userImage']);
     _controller.clear();
   }
 }

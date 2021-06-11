@@ -1,11 +1,12 @@
 import 'dart:io';
 
-import 'file:///C:/Users/ahmed/AndroidStudioProjects/chat_max/lib/widgets/auth/auth_widget.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_storage/firebase_storage.dart';
+import 'package:chat_max/bloc/auth/auth_bloc.dart';
+import 'package:chat_max/screens/chat_screen.dart';
+import 'package:chat_max/widgets/auth/auth_widget.dart';
+import 'package:chat_max/widgets/custom/custom_loading.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 class AuthScreen extends StatefulWidget {
   @override
@@ -13,42 +14,27 @@ class AuthScreen extends StatefulWidget {
 }
 
 class _AuthScreenState extends State<AuthScreen> {
-  final _auth = FirebaseAuth.instance;
   var _isLoading = false;
 
-  void _submitAuthForm(String email, String name, String password, File image,
+  void _submitAuthForm(String email, String password, String name, File image,
       bool isLogin, BuildContext ctx) async {
     try {
       _isLoadingMounted(true);
-      UserCredential userCredential;
+      final blocProvider = BlocProvider.of<AuthBloc>(context);
+
       if (isLogin) {
-        userCredential = await _auth.signInWithEmailAndPassword(
-            email: email.toString().trim(), password: password.toString().trim());
+        await blocProvider.authRepository.userLogin(email, password);
       } else {
-        userCredential = await _auth.createUserWithEmailAndPassword(
-            email: email.trim(), password: password.trim());
+        await blocProvider.authRepository
+            .userRegister(email, name, password, image);
       }
-
-      final ref = FirebaseStorage.instance
-          .ref()
-          .child('user_image')
-          .child('${userCredential.user?.uid} .jpg');
-
-      await ref.putFile(image);
-
-      final url = await ref.getDownloadURL();
-
-      _setDataToFireBase(userCredential.user?.uid, email, name, url);
-
     } on PlatformException catch (error) {
       var message = 'An error occurred';
       if (error.message != null) {
-        message = error.message??'an error occurred';
+        message = error.message ?? 'an error occurred';
       }
-      customSnackBar(ctx, message.toString(), message.toString());
       print(message.toString());
     } catch (error) {
-      customSnackBar(ctx, error.toString(), error.toString());
       print(error.toString());
     }
     _isLoadingMounted(false);
@@ -56,16 +42,53 @@ class _AuthScreenState extends State<AuthScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final blocProvider = BlocProvider.of<AuthBloc>(context);
     return Scaffold(
-      backgroundColor: Theme.of(context).primaryColor,
-      body: AuthForm(
+        backgroundColor: Theme.of(context).primaryColor,
+        body: BlocConsumer<AuthBloc, AuthState>(
+          listener: (context, state) {
+            if (state is AuthError) {
+              return customSnackBar(context, 'content', state.error.toString());
+            }
+          },
+          builder: (context, state) {
+            return BlocBuilder<AuthBloc, AuthState>(builder: (context, state) {
+              if (state is AuthInitial) {
+                return AuthForm(
+                  submit: _submitAuthForm,
+                  isLoading: _isLoading,
+                );
+              } else if (state is AuthLoading) {
+                return const CustomLoading();
+              } else if (state is AuthSuccess) {
+                if (state.authModel.isLogin) {
+                  blocProvider.authRepository.userLogin(
+                      state.authModel.email, state.authModel.password);
+                  Navigator.of(context)
+                      .push(MaterialPageRoute(builder: (_) => ChatScreen()));
+                } else if (!state.authModel.isLogin) {
+                  blocProvider.authRepository.userRegister(
+                      state.authModel.email,
+                      state.authModel.name,
+                      state.authModel.password,
+                      state.authModel.image);
+                }
+              }
+              return AuthForm(
+                submit: _submitAuthForm,
+                isLoading: _isLoading,
+              );
+            });
+          },
+        ));
+
+    /* AuthForm(
         submit: _submitAuthForm,
         isLoading: _isLoading,
-      ),
-    );
+      ),*/
   }
 
-  bool _isLoadingMounted(value) {
+  bool _isLoadingMounted(bool value) {
     if (this.mounted) {
       setState(() {
         _isLoading = value;
@@ -83,12 +106,5 @@ class _AuthScreenState extends State<AuthScreen> {
         ),
         duration: const Duration(seconds: 3)));
     print(logError);
-  }
-
-  Future<void> _setDataToFireBase(userCredential, email, name, url) async {
-    await FirebaseFirestore.instance
-        .collection('users')
-        .doc(userCredential)
-        .set({'email': email, 'name': name, 'userImage': url});
   }
 }

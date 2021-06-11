@@ -5,7 +5,7 @@ class MessageBubble extends StatelessWidget {
   final String? message;
   final String? userName;
   final String? userImage;
-  final bool isMe;
+  final bool isMe ;
 
   const MessageBubble(this.message, this.userName, this.userImage, this.isMe);
 
@@ -13,6 +13,7 @@ class MessageBubble extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     return Stack(
+       clipBehavior: Clip.none,
        children: [
         Row(
           mainAxisAlignment:
@@ -22,7 +23,7 @@ class MessageBubble extends StatelessWidget {
               decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(12),
                   color: isMe ? Colors.grey[300] : theme.accentColor),
-              padding: EdgeInsets.symmetric(horizontal: 20, vertical: 8),
+              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
               child: Column(
                 children: [
                   Text(
@@ -54,7 +55,6 @@ class MessageBubble extends StatelessWidget {
               backgroundImage: NetworkImage(userImage??''),
             )),
       ],
-      clipBehavior: Clip.none,
     );
   }
 }

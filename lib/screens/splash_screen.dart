@@ -9,7 +9,7 @@ class SplashScreen extends StatelessWidget {
       body: Center(
           child: Row(
         children: [
-          Text('Loading...'),
+          const Text('Loading...'),
           CircularProgressIndicator(
             backgroundColor: Theme.of(context).primaryColor,
           ),

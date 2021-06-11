@@ -6,7 +6,7 @@ import 'package:image_picker/image_picker.dart';
 class UserImagePicker extends StatefulWidget {
   final void Function(File imagePicker) imagePickerFunction;
 
-  UserImagePicker(this.imagePickerFunction);
+  const UserImagePicker(this.imagePickerFunction);
 
   @override
   _State createState() => _State();
@@ -15,12 +15,12 @@ class UserImagePicker extends StatefulWidget {
 class _State extends State<UserImagePicker> {
   File? _imageFile;
 
-  void _getImage() async {
+ Future<void> _getImage() async {
     final pickedFile = await ImagePicker().getImage(
-        source: ImageSource.camera,
-        imageQuality: 80,
-        maxWidth: 150,
-        maxHeight: 150);
+      source: ImageSource.camera,
+      imageQuality: 80,
+      maxWidth: 150,
+      maxHeight: 150);
 
     if (pickedFile == null) {
       return;
@@ -44,8 +44,8 @@ class _State extends State<UserImagePicker> {
           style: ElevatedButton.styleFrom(
               textStyle: TextStyle(color: primaryColor)),
           onPressed: _getImage,
-          icon: Icon(Icons.image),
-          label: Text('Add Image'),
+          icon: const Icon(Icons.image),
+          label: const Text('Add Image'),
         )
       ],
     );
