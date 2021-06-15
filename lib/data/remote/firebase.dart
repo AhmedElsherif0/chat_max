@@ -3,6 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 
 class FireBaseHelper {
+  late UserCredential userCredential;
   Future<void> setDataToFireBase(userCredential, email, name, url) async {
     await FirebaseFirestore.instance
         .collection('users')
@@ -11,13 +12,13 @@ class FireBaseHelper {
   }
 
   Future<UserCredential> signInFireBase(String email, String password) async {
-    final userCredential = await FirebaseAuth.instance
+     userCredential = await FirebaseAuth.instance
         .signInWithEmailAndPassword(email: email, password: password);
     return userCredential;
   }
 
   Future<UserCredential> signUpFireBase(String email, String password) async {
-    final userCredential = await FirebaseAuth.instance
+     userCredential = await FirebaseAuth.instance
         .createUserWithEmailAndPassword(email: email, password: password);
     return userCredential;
   }
@@ -28,7 +29,6 @@ class FireBaseHelper {
         .child('user_image')
         .child('${userCredential.user?.uid} .jpg');
   }
-
 
   Future getUserName(String user)async{
    await FirebaseFirestore.instance.collection('users').doc(user).get();

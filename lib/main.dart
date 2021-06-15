@@ -2,9 +2,13 @@ import 'package:chat_max/bloc/auth/auth_bloc.dart';
 import 'package:chat_max/repository/auth_repository.dart';
 import 'package:chat_max/screens/auth_screen.dart';
 import 'package:chat_max/screens/home_screen.dart';
+import 'package:chat_max/utils/theme_data.dart';
+import 'package:device_preview/device_preview.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import 'screens/splash_screen.dart';
@@ -12,7 +16,11 @@ import 'screens/splash_screen.dart';
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
-  runApp(MyApp());
+  runApp(DevicePreview(enabled: !kReleaseMode, builder: (context) => MyApp()));
+
+  SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
+      statusBarColor: Colors.transparent,
+      statusBarIconBrightness: Brightness.light));
 }
 
 class MyApp extends StatelessWidget {
@@ -23,18 +31,12 @@ class MyApp extends StatelessWidget {
         BlocProvider(create: (_) => AuthBloc(AuthRepository())),
       ],
       child: MaterialApp(
+        locale: DevicePreview.locale(context),
+        // Add the locale here
+        builder: DevicePreview.appBuilder,
         title: 'Chat Max',
         debugShowCheckedModeBanner: false,
-        theme: ThemeData(
-            primarySwatch: Colors.lightBlue,
-            backgroundColor: Colors.lightBlue,
-            accentColor: Colors.indigo,
-            accentColorBrightness: Brightness.dark,
-            buttonTheme: ButtonTheme.of(context).copyWith(
-                buttonColor: Colors.blue,
-                textTheme: ButtonTextTheme.primary,
-                shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(20)))),
+        theme: CustomThemeData().themeData(context),
         home: StreamBuilder(
             stream: FirebaseAuth.instance.authStateChanges(),
             builder: (ctx, userSnapShot) {

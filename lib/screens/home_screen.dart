@@ -1,5 +1,6 @@
 import 'package:chat_max/screens/chat_screen.dart';
 import 'package:chat_max/widgets/custom/empty_containter.dart';
+import 'package:chat_max/widgets/custom_appbar.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
@@ -16,6 +17,7 @@ class HomeScreen extends StatelessWidget {
       length: 3,
       child: Scaffold(
         appBar: AppBar(
+          title: const Text('ChatX'),
           actions: [
             _buildDropDownButton(context),
           ],
