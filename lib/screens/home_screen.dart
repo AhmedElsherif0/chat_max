@@ -7,14 +7,17 @@ import 'package:flutter/material.dart';
 class HomeScreen extends StatelessWidget {
   static const routeName = 'home_screen';
 
-  const HomeScreen();
-
   @override
   Widget build(BuildContext context) {
+    List<Widget> _tabsList = const [
+      Text('Chats'),
+      Text('Status'),
+      Text('Calls')
+    ];
     final textStyle = const TextStyle(
         color: Colors.white, fontSize: 20, fontWeight: FontWeight.bold);
     return DefaultTabController(
-      length: 3,
+      length: _tabsList.length,
       child: Scaffold(
         appBar: AppBar(
           title: const Text('ChatX'),
@@ -23,22 +26,20 @@ class HomeScreen extends StatelessWidget {
           ],
           bottom: TabBar(
             indicatorColor: Colors.white,
-            indicatorPadding: EdgeInsets.symmetric(horizontal: 6,vertical: 2),
+            indicatorPadding:
+                const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
             labelStyle: textStyle,
             labelColor: Colors.white,
-            labelPadding: EdgeInsets.symmetric(vertical: 4),
-            tabs: [
-              Text('Chats'),
-              Text('Status'),
-              Text('Calls')
-            ],
+            labelPadding: const EdgeInsets.symmetric(vertical: 4),
+            tabs: _tabsList,
           ),
+          flexibleSpace: GradientAppBar(),
         ),
         body: TabBarView(
           children: [
             ChatScreen(),
-            EmptyContainer('Status',Colors.lightBlue),
-            EmptyContainer('Calls',Colors.lightBlue)
+            EmptyContainer('Status', Colors.lightBlue),
+            EmptyContainer('Calls', Colors.lightBlue)
           ],
         ),
       ),
